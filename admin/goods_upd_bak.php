@@ -1,0 +1,288 @@
+<?php 
+	define('IN_WKCX', true);
+	if (!defined('IN_WKCX'))
+	{
+   		die('Hacking attempt');
+	}
+	
+	include_once("includes/init.php");
+	include_once("sessioncheck.php");
+	$act = !empty($_GET['act']) ? trim($_GET['act']) : '';
+	$id = !empty($_GET['id']) ? intval($_GET['id']) : '';
+	$curPage=!empty($_GET['curPage']) ? intval($_GET['curPage']) : 1;//通过GET传来的当前页数
+	if($act == 'upd')
+	{
+		$sql = "SELECT * FROM wkcx_content WHERE id='$id'";
+		$res = $db->query($sql);
+		$row = $db->getarray($res);
+		$brand_id=$row['brand_id'];
+	}
+?>
+<HTML><HEAD><TITLE>产品修改</TITLE>
+<META content="noindex, nofollow" name=robots>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="MSHTML 6.00.2900.3086" name=GENERATOR>
+<script language="javascript" src="js/pub.js"></script>
+<script type="text/javascript"> 
+function check(){   
+        if(document.form1.news_title.value==""){
+			alert("请输入标题");
+			return false;
+		}
+		 if(document.form1.cat_id.value==""){
+			alert("请选择分类");
+			return false;
+		}
+		 if(document.form1.add_time.value==""){
+			alert("请选择发布时间");
+			return false;
+		}
+}
+</script> 
+<script type="text/javascript" language="javascript" src="js/calendar.js"></script>
+<link href="css.css" rel="stylesheet" type="text/css">
+</HEAD>
+<BODY>
+<div id=hiddenDiv style="filter:Alpha(opacity=10);">
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="border-left:1px solid #B7E6B0;border-right:1px solid #B7E6B0;">
+  <tr>
+    <td height="30" background="images/main_title_bg.jpg">&nbsp;&nbsp;您的当前位置：<a href="#">系统首页</a> >产品修改</td>
+  </tr>
+  <tr>
+    <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td height="10"></td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="10"></td>
+        <td valign="top"><table width="100%" border="0" cellpadding="5" cellspacing="0" bgcolor="#D2FFD2" style="border:1px solid #BCE8B5">
+          <tr>
+            <td align="right"><table width="70" height="22" border="0" cellpadding="0" cellspacing="0" bgcolor="#009900" onMouseOver="this.style.backgroundColor='#003300';" onMouseOut="this.style.backgroundColor='#009900';">
+              <tr>
+                <td align="center"><img src="images/icon_list.gif" width="16" height="16"></td>
+                <td align="center"><p style="margin-top:3px"><a href="goods_list.php" style="font-size:12px; font-weight:normal; color:#FFFFFF">产品列表</a></p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td height="10"></td>
+            </tr>
+          </table>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <form action="?act=update&id=<?=$id?>&curPage=<?=$curPage?>" method="post" enctype="multipart/form-data" name="form1" onSubmit="return check();"><tr>
+              <td><DIV id=con>
+<UL id=tags>
+  <LI class=selectTag><A onClick="selectTag('tagContent0',this)" 
+  href="javascript:void(0)">基本信息</A> </LI>
+  <LI><A onClick="selectTag('tagContent1',this)" 
+  href="javascript:void(0)">详细信息</A> </LI>
+  </UL>
+<DIV id=tagContent>
+<DIV class="tagContent selectTag" id=tagContent0>
+  <table width="100%" border="0" cellpadding="5" cellspacing="1" bgcolor="#CCCCCC">
+    <tr>
+      <td width="120" align="right" bgcolor="#FFFFFF"><strong>产品名称：</strong></td>
+      <td bgcolor="#FFFFFF"><input name="news_title" type="text" style="width:450px;" class="inputuser" onBlur="this.className='inputuser'" onFocus="this.className='inputuser-bor'" value="<?=@$row['news_title']?>"></td>
+      </tr>
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>产品分类：</strong></td>
+      <td bgcolor="#FFFFFF"><select name="cat_id" id="select">
+        <option value="">请选择产品分类</option>
+       			<?php
+                    sub_class(1,"",$row['cat_id']);
+                    function sub_class($pid,$cut,$id)
+                    {
+                        $sql = "SELECT * FROM wkcx_class WHERE pid='$pid' ORDER BY class_order ASC,id DESC";
+                        $res = mysql_query($sql);
+                        while($row = mysql_fetch_array($res))
+                        {
+                ?>
+                <option value='<?=$row['id']?>' <?php if($id==$row['id']) {echo "selected";} ?>><?=$cut.$row['class_name']?></option>
+                <?php            
+                            sub_class($row['id'],'|--'.$cut,$id);
+                        }
+                    }
+                ?>     
+      </select></td>
+      </tr>
+	   <tr style="display:none">
+      <td align="right" bgcolor="#FFFFFF"><strong>所属品牌：</strong></td>
+      <td bgcolor="#FFFFFF"><select name="brand_id" id="select2">
+        <option value="">请选择品牌</option>
+        <?php
+                  
+                        $sql1 = "SELECT * FROM wkcx_content WHERE cat_id='311' ORDER BY id DESC";
+                        $res1 = mysql_query($sql1);
+                        while($row1 = mysql_fetch_array($res1))
+                        {
+						?>
+						<option value='<?=$row1['id']?>' <?php if($brand_id==$row1['id']) {echo "selected";} ?>><?=$row1['news_title']?></option>
+					
+                            
+                       <?php }
+                  
+                ?>
+      </select></td>
+    </tr>
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>上传附件：</strong></td>
+      <td bgcolor="#FFFFFF" valign="middle"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="200"><input type="file" name="img_thumb" id="img_thumb"></td>
+            <td width="60"><img src="/<?=$row['small_img']?>" width="50"></td>
+            <td>说明：如果重新上传图片会覆盖原来的图片</td>
+            </tr>
+        </table></td>
+      </tr>
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>产品价格：</strong></td>
+      <td bgcolor="#FFFFFF"><input name="news_url" type="text" style="width:450px;" class="inputuser" onBlur="this.className='inputuser'" onFocus="this.className='inputuser-bor'" value="<?=@$row['news_url']?>"></td>
+    </tr>
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>发布时间：</strong></td>
+      <td bgcolor="#FFFFFF"><input name="add_time" type="text" style="width:450px;" class="inputuser" onBlur="this.className='inputuser'" onFocus="this.className='inputuser-bor';setday(this);" value="<?=@$row['add_time']?>"></td>
+    </tr>
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>显示顺序：</strong></td>
+      <td bgcolor="#FFFFFF"><input name="news_order" type="text" style="width:100px;" class="inputuser" onBlur="this.className='inputuser'" value="<?=$row['news_order']?>">　　数值越小越靠前</td>
+    </tr>
+    <tr style="display:none">
+      <td align="right" bgcolor="#FFFFFF"><strong>产品状态：</strong></td>
+      <td bgcolor="#FFFFFF">新品<input name="new" type="checkbox" value="1" <?php if($row['new']==1) echo "checked";?>>  推荐<input name="recommend" type="checkbox" value="1" <?php if($row['recommend']==1) echo "checked";?>>  促销<input name="promotion" type="checkbox" value="1" <?php if($row['promotion']==1) echo "checked";?>></td>
+    </tr>
+    
+    <tr>
+      <td align="right" bgcolor="#FFFFFF"><strong>产品简介：</strong></td>
+      <td bgcolor="#FFFFFF"><textarea name="news_desc" class="inputuser" style="width:450px;height:100px" onFocus="this.className='inputuser-bor'" onBlur="this.className='inputuser'"><?=@$row['news_desc']?></textarea></td>
+      </tr>
+  </table>
+</DIV>
+<DIV class=tagContent id=tagContent1>
+<textarea name="content" id="myFCKeditor" style="DISPLAY: none"><?=@$row['news_content']?></textarea>
+<INPUT id="myFCKeditor___Config" style="DISPLAY: none" type=hidden>
+<IFRAME id="myFCKeditor___Frame" src="/FCKeditor/editor/fckeditor.html?InstanceName=myFCKeditor&amp;Toolbar=Default" frameBorder=0 width=100% scrolling=no height=500>
+</IFRAME>
+</DIV>
+</DIV>
+</DIV>
+<SCRIPT type=text/javascript>
+function selectTag(showContent,selfObj)
+{
+	// 操作标签
+	var tag = document.getElementById("tags").getElementsByTagName("li");
+	var taglength = tag.length;
+	for(i=0; i<taglength; i++){
+		tag[i].className = "";
+	}
+	selfObj.parentNode.className = "selectTag";
+	// 操作内容
+	for(i=0; j=document.getElementById("tagContent"+i); i++){
+		j.style.display = "none";
+	}
+	document.getElementById(showContent).style.display = "block";
+}
+</SCRIPT></td>
+            </tr><tr><td height="35"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="10"></td>
+  </tr>
+</table>
+                <table width="100%" border="0" cellspacing="0" cellpadding="5" style="border:1px solid #BCE8B5">
+                  <tr>
+                    <td bgcolor="D2FFD2"><table width="200" border="0" align="center" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" width="75"><input name="Submit2" type="submit" class="button" value="修改" onMouseMove="this.className='button-bor'" onMouseOut="this.className='button'" ></td>
+                        <td align="center" width="75" ><input name="Submit2" type="reset" class="button" value="重置" onMouseMove="this.className='button-bor'" onMouseOut="this.className='button'"></td>
+                      </tr>
+                    </table></td>
+                  </tr>
+                </table>
+</td>
+            </tr></form>
+          </table></td>
+        <td width="10"></td>
+      </tr>
+    </table></td>
+  </tr>
+  
+</table>
+<?php
+	
+	if($act == 'update')
+	{
+		$news_title   = !empty($_POST['news_title']) ? trim($_POST['news_title']) : '';
+		$cat_id       = !empty($_POST['cat_id']) ? intval($_POST['cat_id']) : '';
+		$news_desc    = !empty($_POST['news_desc']) ? $_POST['news_desc'] : '';
+		$news_content = !empty($_POST['content']) ? trim($_POST['content']) : '';
+		$news_order   = !empty($_POST['news_order']) ? intval($_POST['news_order']) : '';
+		$new 		  = !empty($_POST['new']) ? intval($_POST['new']) : '0';
+		$recommend    = !empty($_POST['recommend']) ? intval($_POST['recommend']) : '0';
+		$promotion    = !empty($_POST['promotion']) ? intval($_POST['promotion']) : '0';
+		$brand_id     = !empty($_POST['brand_id'])  ? intval($_POST['brand_id']) : '0';
+		$img_thumb    = "";
+		$news_url     = !empty($_POST['news_url']) ? trim($_POST['news_url']) : '';
+		$add_time     = !empty($_POST['add_time']) ? trim($_POST['add_time']) : '';
+		/*上传附件*/
+		if(!empty($_FILES['img_thumb']['name']))
+		{
+			$up = new upload;
+			$up->fileName = $_FILES["img_thumb"];//根据自己的表单来定
+			$up->imgpreview=1;//是否生成缩略图
+			$up->sw=130;//缩略图宽度
+			$up->sh=85;//缩略图高度
+			$up->up();
+			$img_thumb=$up->bImg; //返回大图片路径
+			$img_thumb = str_replace("../", "", $img_thumb); 
+			$small_img= $up->sImg;//返回缩略图片路径
+			$small_img = str_replace("../", "", $small_img); 	
+		}
+		if(!empty($img_thumb))
+		{	
+			$sql = "UPDATE wkcx_content SET     cat_id='$cat_id',
+												news_title='$news_title',
+												news_desc='$news_desc',
+												news_content='$news_content',
+												add_time='$add_time',
+												img_thumb='$img_thumb',
+												small_img ='$small_img ',
+												news_url='$news_url',
+												news_order='$news_order',
+												new='$new',
+												recommend='$recommend',
+												brand_id='$brand_id',
+												promotion='$promotion' WHERE id='$id'";
+		}
+		else
+		{
+			$sql = "UPDATE wkcx_content SET 	cat_id='$cat_id',
+												news_title='$news_title',
+												news_desc='$news_desc',
+												news_content='$news_content',
+												add_time='$add_time',
+												news_url='$news_url',
+												news_order='$news_order',
+												recommend='$recommend',
+												brand_id='$brand_id',
+												promotion='$promotion' WHERE id='$id'";
+		}
+		$url = "goods_list.php?curPage=".$curPage;
+	
+		
+		if($db->query($sql))
+		{			
+			urlMsg('修改成功',$url);
+		}
+		else
+		{
+			goBakMsg("修改失败");	
+		}
+		
+	}
+	mysql_close($db->connect());
+?>
+</div>
+</BODY></HTML>
